@@ -1,0 +1,45 @@
+name: Build distinst
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cargo \
+            rustc \
+            pkg-config \
+            libparted-dev \
+            libudev-dev \
+            libmount-dev \
+            libblkid-dev \
+            libacl1-dev \
+            libclang-dev \
+            llvm-dev \
+            libsystemd-dev \
+            libdbus-1-dev \
+            gettext
+
+      - name: Build distinst
+        run: make
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: distinst-build
+          path: |
+            target/release/distinst
+            target/release/libdistinst.so
+            target/distinst.h
+            target/distinst.pc
+          if-no-files-found: warn
